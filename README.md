@@ -13,7 +13,7 @@ and fixes them automatically — orchestrated by Temporal for durable execution.
 
 ## How It Works
 
-1. **Scan** — finds unhealthy pods (CrashLoopBackOff, OOMKilled, ImagePullBackOff...)
+1. **Scan** — finds unhealthy pods (CrashLoopBackOff, OOMKilled, ImagePullBackOff..)
 2. **Diagnose** — sends pod details to Claude, gets root cause + fix plan
 3. **Fix** — executes remediation (restart, patch image, adjust resources)
 
