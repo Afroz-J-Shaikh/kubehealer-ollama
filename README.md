@@ -1,5 +1,13 @@
 # KubeHealer
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue?logo=python&logoColor=white)](https://python.org)
+[![Temporal](https://img.shields.io/badge/Temporal-Durable_Execution-8B5CF6?logo=temporal&logoColor=white)](https://temporal.io)
+[![Anthropic Claude](https://img.shields.io/badge/Claude-Sonnet_4-D97757?logo=anthropic&logoColor=white)](https://anthropic.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Cluster_Ops-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+> AI-powered Kubernetes debugging and auto-remediation, orchestrated by Temporal.
+
 AI agent that finds broken Kubernetes pods, diagnoses them with Claude,
 and fixes them automatically — orchestrated by Temporal for durable execution.
 
@@ -93,13 +101,21 @@ CLI (thin terminal)                    Temporal Worker
 
 ## Tech Stack
 
-- **Temporal** — durable workflow orchestration
-- **Anthropic Claude** — LLM for diagnosis + conversational agent
-- **Kubernetes** — target environment
-- **Kind** — local K8s cluster
-- **Python** — everything glued together
+| Component | Role |
+|-----------|------|
+| ![Temporal](https://img.shields.io/badge/-Temporal-8B5CF6?style=flat-square&logo=temporal&logoColor=white) | Durable workflow orchestration |
+| ![Claude](https://img.shields.io/badge/-Claude_Sonnet_4-D97757?style=flat-square&logo=anthropic&logoColor=white) | LLM diagnosis + conversational agent |
+| ![Kubernetes](https://img.shields.io/badge/-Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white) | Target environment |
+| ![Kind](https://img.shields.io/badge/-Kind-326CE5?style=flat-square&logo=kubernetes&logoColor=white) | Local K8s cluster |
+| ![Python](https://img.shields.io/badge/-Python_3.11+-3776AB?style=flat-square&logo=python&logoColor=white) | Everything glued together |
 
 ## Built For
 
 AIOps India meetup — demonstrating AIOps, DevOps, AI Agents,
 and Durable Execution in practice.
+
+---
+
+<p align="center">
+  <sub>Built with Temporal durable execution and Claude AI</sub>
+</p>
