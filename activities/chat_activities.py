@@ -71,8 +71,8 @@ async def call_claude(request: ClaudeRequest) -> ClaudeResponse:
         }
     ]
 
-    activity.logger.info(f"Response: done_reason={response.done_reason}, {len(content_dicts)} blocks")
-    return ClaudeResponse(done_reason=response.done_reason, content=content_dicts)
+    activity.logger.info(f"Response: stop_reason={response.stop_reason}, {len(content_dicts)} blocks")
+    return ClaudeResponse(stop_reason=response.stop_reason, content=content_dicts)
 
 
 # ── Kubernetes read activities ─────────────────────────────────
