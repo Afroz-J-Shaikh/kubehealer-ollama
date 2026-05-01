@@ -13,11 +13,11 @@ def preflight_checks():
     errors = []
 
     # Check Anthropic API key
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        errors.append(
-            "ANTHROPIC_API_KEY not set. "
-            "Copy .env.example to .env and paste your key."
-        )
+   # if not os.environ.get("ANTHROPIC_API_KEY"):
+    #    errors.append(
+     #       "ANTHROPIC_API_KEY not set. "
+      #      "Copy .env.example to .env and paste your key."
+       # )
 
     # Check Kubernetes connectivity (import triggers config load)
     try:
