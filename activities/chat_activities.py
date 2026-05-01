@@ -72,7 +72,7 @@ async def call_claude(request: ClaudeRequest) -> ClaudeResponse:
     ]
     done = getattr(response, 'done_reason', getattr(response, 'stop_reason', 'unknown'))
     activity.logger.info(f"Response: stop_reason={done}, {len(content_dicts)} blocks")
-return ClaudeResponse(stop_reason=done, content=content_dicts)
+    return ClaudeResponse(stop_reason=done, content=content_dicts)
 
 # ── Kubernetes read activities ─────────────────────────────────
 
