@@ -1,4 +1,4 @@
-import anthropic
+import ollama
 from kubernetes import client, config
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
@@ -32,16 +32,28 @@ async def call_claude(request: ClaudeRequest) -> ClaudeResponse:
     """Call the Anthropic Messages API. Returns serializable response."""
     activity.logger.info(f"Calling Claude ({len(request.messages)} messages, {len(request.tools)} tools)")
 
-    ai = anthropic.Anthropic()
-
     try:
-        response = ai.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=4096,
-            system=request.system_prompt,
-            tools=request.tools,
-            messages=request.messages,
+        prompt = f"""
+    System:
+    {request.system_prompt}
+
+    Messages:
+    {request.messages}
+
+    Tools:
+    {request.tools}
+    """
+
+        response = ollama.chat(
+            model="gemma4:latest",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
         )
+
     except anthropic.AuthenticationError as e:
         raise ApplicationError(f"Anthropic auth failed: {e}", non_retryable=True)
     except anthropic.RateLimitError as e:
@@ -52,7 +64,12 @@ async def call_claude(request: ClaudeRequest) -> ClaudeResponse:
         raise ApplicationError(f"Anthropic API error: {e}", non_retryable=True)
 
     # Convert Pydantic content blocks to plain dicts for Temporal serialization
-    content_dicts = [block.model_dump() for block in response.content]
+    content_dicts = [
+        {
+            "type": "text",
+            "text": response["message"]["content"]
+        }
+    ]
 
     activity.logger.info(f"Response: stop_reason={response.stop_reason}, {len(content_dicts)} blocks")
     return ClaudeResponse(stop_reason=response.stop_reason, content=content_dicts)

@@ -1,7 +1,7 @@
 import json
 import re
 
-import anthropic
+import ollama
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
 
@@ -33,28 +33,43 @@ Common patterns:
 VALID_ACTIONS = {"restart_pod", "fix_image", "patch_resources", "skip"}
 
 
-def _parse_json_response(text: str) -> dict:
-    """Parse JSON from Claude's response, stripping markdown fences if present."""
-    # Strip opening fences (```json, ```JSON, ```) and closing fences (```)
-    cleaned = re.sub(r"```(?:json|JSON)?\s*", "", text)
-    cleaned = re.sub(r"```\s*$", "", cleaned, flags=re.MULTILINE)
-    cleaned = cleaned.strip()
-    return json.loads(cleaned)
+def _parse_json_response(text: str):
 
+    cleaned = text.strip()
+
+    if cleaned.startswith("```json"):
+        cleaned = cleaned.replace("```json", "", 1)
+
+    if cleaned.startswith("```"):
+        cleaned = cleaned.replace("```", "", 1)
+
+    if cleaned.endswith("```"):
+        cleaned = cleaned[:-3]
+
+    cleaned = cleaned.strip()
+
+    return json.loads(cleaned)
 
 @activity.defn
 async def diagnose_pod(pod_details: str) -> Diagnosis:
     activity.logger.info("Asking Claude to diagnose pod")
 
-    ai = anthropic.Anthropic()
 
     try:
-        response = ai.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": pod_details}],
+        response = ollama.chat(
+            model="gemma4:latest",
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": pod_details,
+                },
+            ],
         )
+
     except anthropic.AuthenticationError as e:
         raise ApplicationError(
             f"Anthropic auth failed: {e}",
@@ -70,10 +85,13 @@ async def diagnose_pod(pod_details: str) -> Diagnosis:
             non_retryable=True,
         )
 
-    if not response.content:
-        raise ApplicationError("Claude returned empty response for diagnosis")
+    if not response or "message" not in response:
+        raise ApplicationError("Ollama returned empty response")
 
-    raw_text = response.content[0].text
+    raw_text = response["message"]["content"]
+    print("\n=== GEMMA RAW RESPONSE ===")
+    print(raw_text)
+    print("==========================\n")
 
     try:
         data = _parse_json_response(raw_text)
